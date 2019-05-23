@@ -203,6 +203,54 @@ class DataProcessor(object):
         lines.append(line)
       return lines
 
+class CNNewsProcessor(DataProcessor):
+    """
+    IMDB data processor
+    """
+    def _read_csv(self, data_dir, file_name):
+        with open(data_dir + file_name, "r", encoding='utf8') as f:
+          return f.readlines()
+
+    def get_train_examples(self, data_dir):
+        lines = self._read_csv(data_dir, "cnews.train.txt")
+
+        examples = []
+        for (i, line) in enumerate(lines):
+            guid = "train-%d" % (i)
+            parts = line.split('\t')
+            text_a = tokenization.convert_to_unicode(parts[1])
+            label = tokenization.convert_to_unicode(parts[0])
+            examples.append(
+                InputExample(guid=guid, text_a=text_a, label=label))
+        return examples
+
+    def get_dev_examples(self, data_dir):
+        lines = self._read_csv(data_dir, "cnews.test.txt")
+
+        examples = []
+        for (i, line) in enumerate(lines):
+            guid = "dev-%d" % (i)
+            parts = line.split('\t')
+            text_a = tokenization.convert_to_unicode(parts[1])
+            label = tokenization.convert_to_unicode(parts[0])
+            examples.append(
+                InputExample(guid=guid, text_a=text_a, label=label))
+        return examples
+
+    def get_test_examples(self, data_dir):
+        lines = self._read_csv(data_dir, "testData.csv")
+
+        examples = []
+        for (i, line) in enumerate(lines):
+            guid = "test-%d" % (i)
+            parts = line.split('\t')
+            text_a = tokenization.convert_to_unicode(parts[1])
+            label = tokenization.convert_to_unicode(parts[0])
+            examples.append(
+                InputExample(guid=guid, text_a=text_a, label=label))
+        return examples
+    def get_labels(self):
+        return ["体育", "娱乐","家居", "房产", "教育", "时尚", "时政", "游戏", "科技", "财经"]
 
 class XnliProcessor(DataProcessor):
   """Processor for the XNLI data set."""
@@ -788,6 +836,7 @@ def main(_):
       "mnli": MnliProcessor,
       "mrpc": MrpcProcessor,
       "xnli": XnliProcessor,
+      "cnnews":CNNewsProcessor
   }
 
   tokenization.validate_case_matches_checkpoint(FLAGS.do_lower_case,
